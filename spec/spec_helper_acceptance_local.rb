@@ -32,7 +32,7 @@ def uninstall_pwsh
             when 'darwin'
               'brew cask uninstall powershell'
             when 'windows'
-              interpolate_powershell('Get-Command pwsh | ForEach-Object { Remove-Item -Path (Split-Path -Parent $_.Path) -Recurse -Force }')
+              PuppetLitmus::Utils.interpolate_powershell('Get-Command pwsh | ForEach-Object { Remove-Item -Path (Split-Path -Parent $_.Path) -Recurse -Force }')
             end
   Helper.instance.run_shell(command)
 end
@@ -48,11 +48,6 @@ def cleanup_files
                             'file{["/tmp/services.txt","/tmp/process.txt","/tmp/try_success.txt","/tmp/catch_shouldntexist.txt","/tmp/try_shouldntexist.txt","/tmp/catch_success.txt"]: ensure => absent }'
                           end
   Helper.instance.apply_manifest(absent_files_manifest, catch_failures: true)
-end
-
-def interpolate_powershell(command)
-  encoded_command = Base64.strict_encode64(command.encode('UTF-16LE'))
-  "powershell.exe -NoProfile -EncodedCommand #{encoded_command}"
 end
 
 def relative_folder(relative_path)
